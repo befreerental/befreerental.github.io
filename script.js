@@ -82,7 +82,7 @@ function applyLanguage(code) {
   document.getElementById("fullname").placeholder = data.form_name_placeholder || "";
   document.getElementById("phone").placeholder = data.form_phone_placeholder || "";
   document.getElementById("days").placeholder = data.form_days_placeholder || "";
-  updateChatPlatformLabel();
+  updateChatPlatformLabel(safeCode, data);
   refreshEstimate(data);
   const meta = languageMeta[safeCode];
   currentLanguage.textContent = meta.name;
@@ -150,14 +150,14 @@ const today = new Date();
 const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 dateInput.min = todayString;
 
-function updateChatPlatformLabel() {
+function updateChatPlatformLabel(code, data) {
   const legend = document.querySelector(".chat-platform legend");
   if (!legend) return;
-  const safeCode = languageMeta[localStorage.getItem("befree-language")] ? localStorage.getItem("befree-language") : "en";
-  const data = translations[safeCode] || translations.en;
+  const safeCode = code && languageMeta[code] ? code : (languageMeta[localStorage.getItem("befree-language")] ? localStorage.getItem("befree-language") : "en");
+  const activeData = data || translations[safeCode] || translations.en;
   const phoneInputValue = document.getElementById("phone")?.value.trim() || "";
-  const phone = phoneInputValue || data.form_phone_placeholder || "";
-  legend.textContent = (data.form_chat_platform || "").replace("{phone}", phone);
+  const phone = phoneInputValue || activeData.form_phone_placeholder || "";
+  legend.textContent = (activeData.form_chat_platform || "").replace("{phone}", phone);
 }
 
 function refreshEstimate(data) {
@@ -204,7 +204,46 @@ daysInput.addEventListener("blur", () => {
     updatePrice();
   }
 });
-phoneInput.addEventListener("input", updateChatPlatformLabel);
+phoneInput.addEventListener("input", () => updateChatPlatformLabel());
+
+const chatPlatformInputs = document.querySelectorAll('input[name="chatPlatform"]');
+
+function openMobileChat(platform) {
+  if (!window.matchMedia("(pointer: coarse)").matches && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    return;
+  }
+
+  const number = "0988616168";
+  const internationalNumber = "84988616168";
+
+  if (platform === "Zalo") {
+    window.location.href = `https://zalo.me/${number}`;
+  } else if (platform === "WhatsApp") {
+    window.location.href = `https://wa.me/${internationalNumber}`;
+  } else if (platform === "Telegram") {
+    window.location.href = `tg://resolve?phone=%2B${internationalNumber}`;
+  } else if (platform === "WeChat") {
+    window.location.href = "weixin://dl/chat";
+  } else if (platform === "KakaoTalk") {
+    window.location.href = "kakaotalk://";
+  }
+}
+
+chatPlatformInputs.forEach((input) => {
+  input.addEventListener("click", () => {
+    if (input.dataset.wasChecked === "true") {
+      input.checked = false;
+      input.dataset.wasChecked = "false";
+      return;
+    }
+
+    chatPlatformInputs.forEach((item) => {
+      item.dataset.wasChecked = "false";
+    });
+    input.dataset.wasChecked = "true";
+    openMobileChat(input.value);
+  });
+});
 
 document.getElementById("bookingForm").addEventListener("submit", (event) => {
   event.preventDefault();
