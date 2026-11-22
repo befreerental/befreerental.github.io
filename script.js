@@ -208,27 +208,6 @@ phoneInput.addEventListener("input", () => updateChatPlatformLabel());
 
 const chatPlatformInputs = document.querySelectorAll('input[name="chatPlatform"]');
 
-function openMobileChat(platform) {
-  if (!window.matchMedia("(pointer: coarse)").matches && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    return;
-  }
-
-  const number = "0988616168";
-  const internationalNumber = "84988616168";
-
-  if (platform === "Zalo") {
-    window.location.href = `https://zalo.me/${number}`;
-  } else if (platform === "WhatsApp") {
-    window.location.href = `https://wa.me/${internationalNumber}`;
-  } else if (platform === "Telegram") {
-    window.location.href = `tg://resolve?phone=%2B${internationalNumber}`;
-  } else if (platform === "WeChat") {
-    window.location.href = "weixin://dl/chat";
-  } else if (platform === "KakaoTalk") {
-    window.location.href = "kakaotalk://";
-  }
-}
-
 chatPlatformInputs.forEach((input) => {
   input.addEventListener("click", () => {
     if (input.dataset.wasChecked === "true") {
@@ -241,9 +220,28 @@ chatPlatformInputs.forEach((input) => {
       item.dataset.wasChecked = "false";
     });
     input.dataset.wasChecked = "true";
-    openMobileChat(input.value);
   });
 });
+
+function openMobileChatWithBooking(platform, bookingText) {
+  const isMobile = window.matchMedia("(pointer: coarse)").matches ||
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (!isMobile || !platform) return;
+
+  const encodedText = encodeURIComponent(bookingText);
+
+  if (platform === "Zalo") {
+    window.location.href = `https://zalo.me/84988616168?text=${encodedText}`;
+  } else if (platform === "WhatsApp") {
+    window.location.href = `https://wa.me/84988616168?text=${encodedText}`;
+  } else if (platform === "Telegram") {
+    window.location.href = `https://t.me/share/url?text=${encodedText}`;
+  } else if (platform === "WeChat") {
+    window.location.href = "weixin://dl/chat";
+  } else if (platform === "KakaoTalk") {
+    window.location.href = "kakaotalk://";
+  }
+}
 
 document.getElementById("bookingForm").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -276,9 +274,8 @@ document.getElementById("bookingForm").addEventListener("submit", async (event) 
   const chatPlatform = form.querySelector('input[name="chatPlatform"]:checked')?.value || "";
   const rental = calculateRental(days);
   const total = rental.total.toLocaleString("vi-VN");
-  const text = encodeURIComponent(
-    `BeFree booking request\nName: ${name}\nPhone: ${phone}\nPreferred chat platform: ${chatPlatform}\nDate: ${rentalDate}\nDays: ${rental.enteredDays}\nEstimated total: ${total} VND`
-  );
+  const bookingText = `BeFree booking request\nName: ${name}\nPhone: ${phone}\nPreferred chat platform: ${chatPlatform}\nDate: ${rentalDate}\nDays: ${rental.enteredDays}\nEstimated total: ${total} VND`;
+  const text = encodeURIComponent(bookingText);
   message.textContent = "";
   const activeCode = languageMeta[localStorage.getItem("befree-language")] ? localStorage.getItem("befree-language") : "en";
   const activeTranslations = translations[activeCode] || translations.en;
@@ -304,6 +301,7 @@ document.getElementById("bookingForm").addEventListener("submit", async (event) 
     }
 
     message.textContent = activeTranslations.form_success || "Your booking request was sent successfully.";
+    openMobileChatWithBooking(chatPlatform, bookingText);
   } catch (error) {
     message.textContent = activeTranslations.form_error || "Could not send the request. Please try WhatsApp.";
     message.style.color = "#c62828";
