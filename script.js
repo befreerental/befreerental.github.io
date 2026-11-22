@@ -141,6 +141,80 @@ window.addEventListener("scroll", () => {
   }
 }, { passive: true });
 
+const introSlider = document.querySelector("[data-slider]");
+
+if (introSlider) {
+  const slides = [...introSlider.querySelectorAll(".intro-slider__slide")];
+  const dotsContainer = introSlider.querySelector(".intro-slider__dots");
+  const previousButton = introSlider.querySelector(".intro-slider__button--prev");
+  const nextButton = introSlider.querySelector(".intro-slider__button--next");
+  let currentSlide = 0;
+  let autoplayTimer;
+  let touchStartX = 0;
+
+  slides.forEach((_, index) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "intro-slider__dot";
+    dot.setAttribute("aria-label", `Show image ${index + 1}`);
+    dot.addEventListener("click", () => showSlide(index));
+    dotsContainer.appendChild(dot);
+  });
+
+  const dots = [...dotsContainer.querySelectorAll(".intro-slider__dot")];
+
+  function showSlide(index) {
+    currentSlide = (index + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => {
+      const active = slideIndex === currentSlide;
+      slide.classList.toggle("active", active);
+      slide.setAttribute("aria-hidden", String(!active));
+    });
+    dots.forEach((dot, dotIndex) => {
+      const active = dotIndex === currentSlide;
+      dot.classList.toggle("active", active);
+      dot.setAttribute("aria-current", active ? "true" : "false");
+    });
+  }
+
+  function stopAutoplay() {
+    window.clearInterval(autoplayTimer);
+  }
+
+  function startAutoplay() {
+    stopAutoplay();
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      autoplayTimer = window.setInterval(() => showSlide(currentSlide + 1), 3000);
+    }
+  }
+
+  previousButton.addEventListener("click", () => {
+    showSlide(currentSlide - 1);
+    startAutoplay();
+  });
+  nextButton.addEventListener("click", () => {
+    showSlide(currentSlide + 1);
+    startAutoplay();
+  });
+
+  introSlider.addEventListener("mouseenter", stopAutoplay);
+  introSlider.addEventListener("mouseleave", startAutoplay);
+  introSlider.addEventListener("focusin", stopAutoplay);
+  introSlider.addEventListener("focusout", startAutoplay);
+  introSlider.addEventListener("touchstart", (event) => {
+    touchStartX = event.changedTouches[0].clientX;
+  }, { passive: true });
+  introSlider.addEventListener("touchend", (event) => {
+    const distance = event.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(distance) > 50) {
+      showSlide(currentSlide + (distance < 0 ? 1 : -1));
+    }
+  }, { passive: true });
+
+  showSlide(0);
+  startAutoplay();
+}
+
 const dateInput = document.getElementById("date");
 const daysInput = document.getElementById("days");
 const totalPrice = document.getElementById("totalPrice");
