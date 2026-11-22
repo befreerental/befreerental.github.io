@@ -37,7 +37,7 @@
         <a href="#home" class="brand" aria-label="Befree home">
           <img src="images/header_logo.png" alt="Befree E-Scooter Rental">
         </a>
-        <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+        <button class="menu-toggle" type="button" aria-label="Open menu" aria-controls="mainNav" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
         <nav class="nav" id="mainNav" aria-label="Primary navigation">
@@ -142,19 +142,36 @@
           <span class="section-kicker section-kicker--light" data-i18n="booking_kicker">Book now</span>
           <h2 data-i18n="booking_title">Ready to ride in minutes</h2>
           <p data-i18n="booking_text">Complete the form and our team will confirm your booking quickly.</p>
-          <div class="booking__features">
-            <div><span>24/7</span><strong data-i18n="booking_support">Always available</strong></div>
-            <div><span>150k</span><strong data-i18n="booking_price">VND per day</strong></div>
+          <div class="booking-price-table" aria-label="Rental pricing">
+            <h3 data-i18n="price_table_title">Rental price</h3>
+            <div class="booking-price-table__head">
+              <span data-i18n="price_table_days">Rental period</span>
+              <span data-i18n="price_table_rate">VND / day</span>
+            </div>
+            <div><span data-i18n="price_1_2_days">1-2 days</span><strong>150,000</strong></div>
+            <div><span data-i18n="price_3_4_days">3-4 days</span><strong>140,000</strong></div>
+            <div><span data-i18n="price_5_29_days">5-29 days</span><strong>130,000</strong></div>
+            <div><span data-i18n="price_30_days">30+ days</span><strong>70,000</strong></div>
           </div>
         </div>
         <form class="booking-form" id="bookingForm">
           <div class="form-grid">
-            <label><span data-i18n="form_name">Full name</span><input type="text" id="fullname" name="fullname" placeholder="Your name" required></label>
-            <label><span data-i18n="form_phone">Phone number</span><input type="tel" id="phone" name="phone" placeholder="09xx xxx xxx" required></label>
+            <label><span data-i18n="form_name">Full name</span><input type="text" id="fullname" name="fullname" placeholder="Your name" autocomplete="name" minlength="2" required></label>
+            <label><span data-i18n="form_phone">Phone number</span><input type="tel" id="phone" name="phone" placeholder="09xx xxx xxx" autocomplete="tel" required></label>
             <label><span data-i18n="form_date">Rental date</span><input type="date" id="date" name="date" required></label>
             <label><span data-i18n="form_days">Number of days</span><input type="number" id="days" name="days" min="1" inputmode="numeric" placeholder="Enter number" required></label>
+            <fieldset class="chat-platform">
+              <legend data-i18n="form_chat_platform">Choose a platform we can use to contact you</legend>
+              <div class="chat-platform__options">
+                <label><input type="radio" name="chatPlatform" value="Zalo" required><span>Zalo</span></label>
+                <label><input type="radio" name="chatPlatform" value="WhatsApp"><span>WhatsApp</span></label>
+                <label><input type="radio" name="chatPlatform" value="Telegram"><span>Telegram</span></label>
+                <label><input type="radio" name="chatPlatform" value="WeChat"><span>WeChat</span></label>
+                <label><input type="radio" name="chatPlatform" value="KakaoTalk"><span>KakaoTalk</span></label>
+              </div>
+            </fieldset>
           </div>
-          <div class="price-summary"><span data-i18n="form_estimate">Estimated total</span><strong id="totalPrice">150,000 ₫</strong></div>
+          <div class="price-summary"><span data-i18n="form_estimate">Estimated total</span><strong id="totalPrice">Chỉ từ 70.000 VNĐ / ngày</strong></div>
           <button type="submit" class="button button--wide" data-i18n="form_submit">Send booking request</button>
           <p class="form-message" id="formMessage" aria-live="polite"></p>
         </form>
