@@ -152,6 +152,13 @@ button, input { font: inherit; }
 .faq__items summary::after { content: "+"; position: absolute; right: 4px; color: var(--gold-dark); font-size: 22px; }
 .faq__items details[open] summary::after { content: "−"; }
 .faq__items details p { margin: 0 0 20px; color: var(--muted); line-height: 1.7; }
+.contract-faq__content { padding: 0 0 8px 16px; }
+.contract-faq__content details { border-bottom: 1px solid var(--line); }
+.contract-faq__content summary { padding: 16px 40px 16px 0; font-size: 15px; }
+.contract-faq__section { color: var(--muted); line-height: 1.7; }
+.contract-faq__section h4 { margin: 8px 0 6px; color: var(--ink); }
+.contract-faq__section ul { margin: 0 0 16px; padding-left: 22px; }
+.contract-faq__section li { margin-bottom: 8px; }
 .footer { padding: 70px 0 20px; background: #172b26; color: #fff; }
 .footer__grid { display: grid; grid-template-columns: 2fr 1fr 1.5fr; gap: 70px; }
 .footer__brand img { width: 230px; height: 75px; object-fit: contain; object-position: left; background: transparent; }
