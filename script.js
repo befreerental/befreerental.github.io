@@ -401,6 +401,29 @@ if (existingCooldownUntil > Date.now()) {
   }
 }
 
+async function submitGoogleBookingForm(name, phone, rentalDate, days) {
+  const [year, month, day] = rentalDate.split("-");
+  const formData = new URLSearchParams({
+    "entry.188790847": name,
+    "entry.1701305125": phone,
+    "entry.867406678_day": String(Number(day)),
+    "entry.867406678_month": String(Number(month)),
+    "entry.867406678_year": year,
+    "entry.1087281785": String(days),
+    "submit": "Submit"
+  });
+
+  await fetch(
+    "https://docs.google.com/forms/d/e/1FAIpQLSd_cFLKCVrh-_kh54XBN_byXzEozohn_n1vzNupUe_wtXiE1g/formResponse",
+    {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body: formData.toString()
+    }
+  );
+}
+
 document.getElementById("bookingForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = event.currentTarget;
@@ -463,6 +486,9 @@ document.getElementById("bookingForm").addEventListener("submit", async (event) 
     message.classList.add("form-message--success");
     localStorage.setItem(submitMessageKey, message.textContent);
     localStorage.setItem(submitMessageTypeKey, "success");
+    submitGoogleBookingForm(name, phone, rentalDate, rental.enteredDays).catch(() => {
+      console.error("Google Booking Form submission failed.");
+    });
     openMobileChatWithBooking(chatPlatform, bookingText);
   } catch (error) {
     message.textContent = activeTranslations.form_error || "Could not send the request. Please try WhatsApp.";
