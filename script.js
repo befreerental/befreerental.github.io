@@ -71,6 +71,52 @@ const languageMeta = {
   ru: {name:"Русский", flag:"fi-ru"}
 };
 
+const seoMetadata = {
+  en: {
+    title:"BeFree E-Scooter Rental in Da Nang | Rent an Electric Scooter",
+    description:"Rent clean, safe VinFast electric scooters in Da Nang. Transparent prices, no deposit and 24/7 support. Book BeFree now.",
+    locale:"en_US"
+  },
+  vi: {
+    title:"Thuê Xe Máy Điện Đà Nẵng - BeFree E-Scooter Rental",
+    description:"Thuê xe máy điện VinFast tại Đà Nẵng: xe sạch, an toàn, không cần đặt cọc, đổi pin miễn phí và hỗ trợ 24/7.",
+    locale:"vi_VN"
+  },
+  zh: {
+    title:"岘港电动摩托车租赁 - BeFree E-Scooter Rental",
+    description:"在岘港租赁 VinFast 电动摩托车：车辆干净安全、价格透明、不需押金，并提供全天候支持。",
+    locale:"zh_CN"
+  },
+  ko: {
+    title:"다낭 전기 스쿠터 렌탈 - BeFree E-Scooter Rental",
+    description:"다낭에서 VinFast 전기 스쿠터를 렌탈하세요. 깨끗하고 안전한 차량, 투명한 요금, 보증금 없음, 연중무휴 지원.",
+    locale:"ko_KR"
+  },
+  ru: {
+    title:"Аренда электроскутеров в Дананге - BeFree E-Scooter Rental",
+    description:"Аренда чистых и безопасных электроскутеров VinFast в Дананге. Прозрачные цены, без залога и поддержка 24/7.",
+    locale:"ru_RU"
+  }
+};
+
+function updateSeoMetadata(code) {
+  const seo = seoMetadata[code] || seoMetadata.en;
+  document.title = seo.title;
+  const description = document.querySelector('meta[name="description"]');
+  if (description) description.setAttribute("content", seo.description);
+
+  [
+    ["property", "og:title", seo.title],
+    ["property", "og:description", seo.description],
+    ["property", "og:locale", seo.locale],
+    ["name", "twitter:title", seo.title],
+    ["name", "twitter:description", seo.description]
+  ].forEach(([attribute, value, content]) => {
+    const element = document.querySelector(`meta[${attribute}="${value}"]`);
+    if (element) element.setAttribute("content", content);
+  });
+}
+
 const langButton = document.getElementById("langButton");
 const langMenu = document.getElementById("langMenu");
 const currentFlag = document.getElementById("currentFlag");
@@ -80,6 +126,7 @@ function applyLanguage(code) {
   const safeCode = languageMeta[code] ? code : "en";
   const data = translations[safeCode] || translations.en;
   document.documentElement.lang = safeCode;
+  updateSeoMetadata(safeCode);
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     const key = element.dataset.i18n;
     if (data[key]) element.innerHTML = data[key];
